@@ -73,20 +73,38 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
+if (!function_exists('ci_env')) {
+    function ci_env($key, $default = null) {
+        $val = getenv($key);
+        if ($val !== false && $val !== '') return $val;
+        if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') return $_SERVER[$key];
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') return $_ENV[$key];
+        return $default;
+    }
+}
+
+$db_host   = ci_env('DB_HOST', 'localhost');
+$db_port   = ci_env('DB_PORT', null);
+$db_user   = ci_env('DB_USER', 'root');
+$db_pass   = ci_env('DB_PASS', '');
+$db_name   = ci_env('DB_NAME', null);
+$db_driver = ci_env('DB_DRIVER', null);
+
 $is_postgre = (
-    getenv('DB_DRIVER') === 'postgre' ||
-    getenv('DB_PORT') == '5432' ||
-    getenv('DB_PORT') == '6543' ||
-    (getenv('DB_HOST') && strpos(getenv('DB_HOST'), 'supabase') !== false)
+    $db_driver === 'postgre' ||
+    $db_port == '5432' ||
+    $db_port == '6543' ||
+    ($db_host && strpos($db_host, 'supabase') !== false) ||
+    ($db_host && strpos($db_host, 'pooler') !== false)
 );
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => getenv('DB_HOST') ? getenv('DB_HOST') : 'localhost',
-	'username' => getenv('DB_USER') ? getenv('DB_USER') : 'root',
-	'password' => getenv('DB_PASS') !== false ? getenv('DB_PASS') : '',
-	'database' => getenv('DB_NAME') ? getenv('DB_NAME') : ($is_postgre ? 'postgres' : 'db_perpus_kelurahan'),
-	'dbdriver' => $is_postgre ? 'postgre' : (getenv('DB_DRIVER') ? getenv('DB_DRIVER') : 'mysqli'),
+	'hostname' => $db_host,
+	'username' => $db_user,
+	'password' => $db_pass !== null ? $db_pass : '',
+	'database' => $db_name ? $db_name : ($is_postgre ? 'postgres' : 'db_perpus_kelurahan'),
+	'dbdriver' => $is_postgre ? 'postgre' : ($db_driver ? $db_driver : 'mysqli'),
 	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
@@ -100,5 +118,5 @@ $db['default'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
-	'port'     => getenv('DB_PORT') ? (int) getenv('DB_PORT') : ($is_postgre ? 5432 : 3306)
+	'port'     => $db_port ? (int) $db_port : ($is_postgre ? 5432 : 3306)
 );
