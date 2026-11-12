@@ -83,12 +83,14 @@ if (!function_exists('ci_env')) {
     }
 }
 
-$db_host   = ci_env('DB_HOST', 'localhost');
-$db_port   = ci_env('DB_PORT', null);
-$db_user   = ci_env('DB_USER', 'root');
+$is_vercel = (getenv('VERCEL') == '1' || isset($_SERVER['VERCEL']));
+
+$db_host   = ci_env('DB_HOST', $is_vercel ? 'aws-0-ap-south-1.pooler.supabase.com' : 'localhost');
+$db_port   = ci_env('DB_PORT', $is_vercel ? 5432 : 3306);
+$db_user   = ci_env('DB_USER', $is_vercel ? 'postgres.ighznhsxsphhmokyuipw' : 'root');
 $db_pass   = ci_env('DB_PASS', '');
-$db_name   = ci_env('DB_NAME', null);
-$db_driver = ci_env('DB_DRIVER', null);
+$db_name   = ci_env('DB_NAME', $is_vercel ? 'postgres' : 'db_perpus_kelurahan');
+$db_driver = ci_env('DB_DRIVER', $is_vercel ? 'postgre' : 'mysqli');
 
 $is_postgre = (
     $db_driver === 'postgre' ||
@@ -118,5 +120,6 @@ $db['default'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
-	'port'     => $db_port ? (int) $db_port : ($is_postgre ? 5432 : 3306)
+	'port'     => $db_port ? (int) $db_port : ($is_postgre ? 5432 : 3306),
+	'sslmode'  => $is_postgre ? 'require' : ''
 );
