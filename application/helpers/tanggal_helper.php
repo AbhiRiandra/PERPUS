@@ -27,8 +27,12 @@ if (!function_exists('badge_jatuh_tempo')) {
     function badge_jatuh_tempo($jatuh_tempo)
     {
         $s = sisa_hari($jatuh_tempo);
-        if ($s < 0)   { return '<span class="badge bg-danger">Terlambat ' . abs($s) . ' hari</span>'; }
-        if ($s <= 7)  { return '<span class="badge bg-warning text-dark">Sisa ' . $s . ' hari</span>'; }
-        return '<span class="badge bg-success">Sisa ' . $s . ' hari</span>';
+        if ($s < 0) {
+            return '<span class="badge badge-soft-danger"><i class="bi bi-exclamation-circle-fill me-1"></i>Terlambat ' . abs($s) . ' hari</span>';
+        }
+        if ($s <= 7) {
+            return '<span class="badge badge-soft-warning"><i class="bi bi-clock-fill me-1"></i>Sisa ' . $s . ' hari</span>';
+        }
+        return '<span class="badge badge-soft-success"><i class="bi bi-check-circle-fill me-1"></i>Sisa ' . $s . ' hari</span>';
     }
 }

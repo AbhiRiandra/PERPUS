@@ -88,7 +88,7 @@ $is_vercel = (getenv('VERCEL') == '1' || isset($_SERVER['VERCEL']));
 $db_host   = ci_env('DB_HOST', $is_vercel ? 'aws-0-ap-south-1.pooler.supabase.com' : 'localhost');
 $db_port   = ci_env('DB_PORT', $is_vercel ? 5432 : 3306);
 $db_user   = ci_env('DB_USER', $is_vercel ? 'postgres.ighznhsxsphhmokyuipw' : 'root');
-$db_pass   = ci_env('DB_PASS', 'Bima_2023.gg');
+$db_pass   = ci_env('DB_PASS', $is_vercel ? 'Bima_2023.gg' : '');
 $db_name   = ci_env('DB_NAME', $is_vercel ? 'postgres' : 'db_perpus_kelurahan');
 $db_driver = ci_env('DB_DRIVER', $is_vercel ? 'postgre' : 'mysqli');
 
