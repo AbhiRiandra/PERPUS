@@ -73,25 +73,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
+$is_postgre = (
+    getenv('DB_DRIVER') === 'postgre' ||
+    getenv('DB_PORT') == '5432' ||
+    getenv('DB_PORT') == '6543' ||
+    (getenv('DB_HOST') && strpos(getenv('DB_HOST'), 'supabase') !== false)
+);
+
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => getenv('DB_HOST') ? getenv('DB_HOST') : 'localhost',
 	'username' => getenv('DB_USER') ? getenv('DB_USER') : 'root',
 	'password' => getenv('DB_PASS') !== false ? getenv('DB_PASS') : '',
-	'database' => getenv('DB_NAME') ? getenv('DB_NAME') : 'db_perpus_kelurahan',
-	'dbdriver' => 'mysqli',
+	'database' => getenv('DB_NAME') ? getenv('DB_NAME') : ($is_postgre ? 'postgres' : 'db_perpus_kelurahan'),
+	'dbdriver' => $is_postgre ? 'postgre' : (getenv('DB_DRIVER') ? getenv('DB_DRIVER') : 'mysqli'),
 	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
 	'cache_on' => FALSE,
 	'cachedir' => '',
 	'char_set' => 'utf8',
-	'dbcollat' => 'utf8_general_ci',
+	'dbcollat' => $is_postgre ? 'default' : 'utf8_general_ci',
 	'swap_pre' => '',
 	'encrypt' => FALSE,
 	'compress' => FALSE,
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
-	'port'     => getenv('DB_PORT') ? (int) getenv('DB_PORT') : 3306
+	'port'     => getenv('DB_PORT') ? (int) getenv('DB_PORT') : ($is_postgre ? 5432 : 3306)
 );
