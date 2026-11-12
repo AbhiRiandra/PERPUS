@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'db_perpus_kelurahan',
+	'hostname' => getenv('DB_HOST') ? getenv('DB_HOST') : 'localhost',
+	'username' => getenv('DB_USER') ? getenv('DB_USER') : 'root',
+	'password' => getenv('DB_PASS') !== false ? getenv('DB_PASS') : '',
+	'database' => getenv('DB_NAME') ? getenv('DB_NAME') : 'db_perpus_kelurahan',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
@@ -92,5 +92,6 @@ $db['default'] = array(
 	'compress' => FALSE,
 	'stricton' => FALSE,
 	'failover' => array(),
-	'save_queries' => TRUE
+	'save_queries' => TRUE,
+	'port'     => getenv('DB_PORT') ? (int) getenv('DB_PORT') : 3306
 );

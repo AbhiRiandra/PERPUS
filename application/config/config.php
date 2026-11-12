@@ -23,7 +23,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/perpus_kelurahan/';
+if (getenv('BASE_URL')) {
+    $config['base_url'] = rtrim(getenv('BASE_URL'), '/') . '/';
+} elseif (isset($_SERVER['HTTP_HOST'])) {
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
+        ? 'https://' : 'http://';
+    $path = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+    $config['base_url'] = $protocol . $_SERVER['HTTP_HOST'] . $path;
+} else {
+    $config['base_url'] = 'http://localhost/perpus_kelurahan/';
+}
 
 /*
 |--------------------------------------------------------------------------
