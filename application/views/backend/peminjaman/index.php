@@ -1,30 +1,26 @@
 <?php $is_admin = $this->session->userdata('role') === 'admin'; ?>
 
-<div class="modern-card">
+<div class="clean-card">
 
     <!-- HEADER -->
     <div class="card-header bg-transparent border-bottom px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
-            <h5 class="fw-bold text-dark mb-1">
-                <i class="bi bi-clock-history text-primary me-2"></i>Riwayat Sirkulasi Peminjaman
-            </h5>
-            <p class="text-muted small mb-0">
-                Rekam jejak otomatis setiap paket buku yang dipinjamkan, dioper antar lokasi, maupun ditarik kembali.
-            </p>
+            <h5 class="fw-bold text-dark mb-0">Riwayat Sirkulasi Peminjaman</h5>
+            <span class="text-muted small">Catatan peminjaman, oper lokasi, dan pengembalian paket buku</span>
         </div>
-        <span class="badge badge-soft-primary"><?= count($riwayat) ?> Data Tercatat</span>
+        <span class="badge badge-soft-secondary"><?= count($riwayat) ?> Catatan</span>
     </div>
 
     <!-- FILTER BAR -->
-    <div class="px-4 py-3 border-bottom bg-light bg-opacity-50">
+    <div class="px-4 py-2 border-bottom bg-light bg-opacity-50">
         <form method="get" action="<?= base_url('backend/peminjaman') ?>" class="row g-2 align-items-center">
             <div class="col-12 col-sm-6 col-lg-3">
-                <select name="status" class="form-select form-select-sm bg-white">
-                    <option value="">Semua Status Sirkulasi</option>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">Semua Status</option>
                     <?php foreach ([
-                        'berjalan'  => 'Sedang Berjalan (Aktif)',
-                        'terlambat' => 'Melewati Jatuh Tempo (Terlambat)',
-                        'selesai'   => 'Selesai (Sudah Ditarik / Dioper)'
+                        'berjalan'  => 'Sedang Berjalan',
+                        'terlambat' => 'Terlambat',
+                        'selesai'   => 'Selesai'
                     ] as $v => $t): ?>
                         <option value="<?= $v ?>" <?= $status === $v ? 'selected' : '' ?>><?= $t ?></option>
                     <?php endforeach; ?>
@@ -32,7 +28,7 @@
             </div>
 
             <div class="col-12 col-sm-6 col-lg-4">
-                <select name="lokasi" class="form-select form-select-sm bg-white">
+                <select name="lokasi" class="form-select form-select-sm">
                     <option value="">Semua Lokasi / Kelurahan</option>
                     <?php foreach ($lokasi as $l): ?>
                         <option value="<?= (int) $l['id'] ?>" <?= (int) $id_lokasi === (int) $l['id'] ? 'selected' : '' ?>>
@@ -43,18 +39,15 @@
             </div>
 
             <div class="col-12 col-sm-7 col-lg-3">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="search" id="cariRiwayat" class="form-control bg-white border-start-0 ps-0" placeholder="Filter cepat di tabel...">
-                </div>
+                <input type="search" id="cariRiwayat" class="form-control form-control-sm" placeholder="Cari di tabel...">
             </div>
 
             <div class="col-12 col-sm-5 col-lg-2 d-flex gap-2">
                 <button type="submit" class="btn btn-primary btn-sm flex-fill">
-                    <i class="bi bi-funnel me-1"></i>Terapkan
+                    Terapkan
                 </button>
                 <?php if ($status || $id_lokasi): ?>
-                    <a href="<?= base_url('backend/peminjaman') ?>" class="btn btn-light border btn-sm" title="Reset Filter">
+                    <a href="<?= base_url('backend/peminjaman') ?>" class="btn btn-light border btn-sm" title="Reset">
                         <i class="bi bi-arrow-counterclockwise"></i>
                     </a>
                 <?php endif; ?>
@@ -71,39 +64,34 @@
                 'onsubmit' => "return konfirmasiHapusRiwayat();"
             ]
         ) ?>
-        <div class="px-4 py-2 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: #f8fafc;">
+        <div class="px-4 py-2 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 bg-light bg-opacity-25">
             <div class="form-check mb-0">
                 <input class="form-check-input" type="checkbox" id="pilihSemuaRiwayat">
-                <label class="form-check-label small fw-medium text-secondary" for="pilihSemuaRiwayat">
-                    Pilih semua riwayat yang berstatus <strong>Selesai</strong>
+                <label class="form-check-label small text-muted" for="pilihSemuaRiwayat">
+                    Pilih semua yang berstatus <strong>Selesai</strong>
                 </label>
             </div>
 
-            <div class="d-flex align-items-center gap-2">
-                <span class="small text-muted d-none d-sm-inline">
-                    <i class="bi bi-info-circle me-1"></i>Hanya riwayat selesai yang dapat dihapus
-                </span>
-                <button type="submit" form="formHapusRiwayat" class="btn btn-sm btn-outline-danger fw-semibold" id="btnHapusRiwayat">
-                    <i class="bi bi-trash3 me-1"></i>Hapus Terpilih
-                </button>
-            </div>
+            <button type="submit" form="formHapusRiwayat" class="btn btn-sm btn-outline-danger" id="btnHapusRiwayat">
+                <i class="bi bi-trash3 me-1"></i>Hapus Terpilih
+            </button>
         </div>
     <?php endif; ?>
 
     <!-- TABEL RIWAYAT -->
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-modern table-hover align-middle mb-0" id="tabelRiwayat">
+            <table class="table table-clean table-hover align-middle mb-0" id="tabelRiwayat">
                 <thead>
                     <tr>
                         <?php if ($is_admin): ?>
-                            <th class="ps-4 text-center" style="width: 55px;">Pilih</th>
+                            <th class="ps-4 text-center" style="width: 45px;">Pilih</th>
                         <?php endif; ?>
-                        <th class="<?= $is_admin ? '' : 'ps-4' ?>" style="width: 90px;">Paket</th>
-                        <th>Lokasi &amp; Jenis Transaksi</th>
-                        <th>Tgl Masuk</th>
+                        <th class="<?= $is_admin ? '' : 'ps-4' ?>" style="width: 70px;">Paket</th>
+                        <th>Lokasi Tujuan</th>
+                        <th>Tgl Pinjam</th>
                         <th>Jatuh Tempo</th>
-                        <th>Tgl Keluar</th>
+                        <th>Tgl Selesai</th>
                         <th>Status</th>
                         <th class="pe-4">Petugas</th>
                     </tr>
@@ -111,12 +99,8 @@
                 <tbody>
                 <?php if (empty($riwayat)): ?>
                     <tr>
-                        <td colspan="<?= $is_admin ? 8 : 7 ?>">
-                            <div class="empty-state">
-                                <div class="empty-state-icon"><i class="bi bi-clock-history"></i></div>
-                                <h6 class="fw-bold text-dark mb-1">Tidak Ada Data Riwayat</h6>
-                                <p class="text-muted small mb-0">Belum ada transaksi peminjaman yang sesuai dengan filter saat ini.</p>
-                            </div>
+                        <td colspan="<?= $is_admin ? 8 : 7 ?>" class="text-center py-4 text-muted small">
+                            Tidak ada data riwayat peminjaman yang sesuai.
                         </td>
                     </tr>
                 <?php else: ?>
@@ -135,7 +119,7 @@
                                         <input class="form-check-input"
                                                type="checkbox"
                                                disabled
-                                               title="Riwayat yang masih berjalan tidak dapat dihapus">
+                                               title="Riwayat berjalan tidak dapat dihapus">
                                     <?php endif; ?>
                                 </td>
                             <?php endif; ?>
@@ -147,44 +131,29 @@
                             </td>
 
                             <td>
-                                <div class="d-flex align-items-center flex-wrap gap-2">
-                                    <span class="fw-bold text-dark"><?= html_escape($r['nama_lokasi']) ?></span>
-                                    <?php if ($r['jenis'] === 'oper'): ?>
-                                        <span class="badge badge-soft-warning">Oper Lokasi</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-soft-info">Pinjam Baru</span>
-                                    <?php endif; ?>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="fw-semibold text-dark"><?= html_escape($r['nama_lokasi']) ?></span>
+                                    <span class="badge badge-soft-secondary"><?= ucfirst($r['jenis']) ?></span>
                                 </div>
                                 <?php if (!empty($r['catatan'])): ?>
-                                    <div class="text-muted small mt-1">
-                                        <i class="bi bi-chat-left-text me-1"></i><?= html_escape((string) $r['catatan']) ?>
-                                    </div>
+                                    <div class="text-muted small mt-1"><?= html_escape((string) $r['catatan']) ?></div>
                                 <?php endif; ?>
                             </td>
 
-                            <td class="small fw-medium"><?= tgl_indo($r['tgl_pinjam']) ?></td>
-                            <td class="small fw-medium"><?= tgl_indo($r['tgl_jatuh_tempo']) ?></td>
-                            <td class="small text-secondary"><?= tgl_indo($r['tgl_kembali']) ?></td>
+                            <td class="small"><?= tgl_indo($r['tgl_pinjam']) ?></td>
+                            <td class="small"><?= tgl_indo($r['tgl_jatuh_tempo']) ?></td>
+                            <td class="small text-muted"><?= tgl_indo($r['tgl_kembali']) ?></td>
 
                             <td>
                                 <?php if ($r['status'] === 'berjalan'): ?>
                                     <?= badge_jatuh_tempo($r['tgl_jatuh_tempo']) ?>
                                 <?php else: ?>
-                                    <span class="badge badge-soft-secondary">
-                                        <i class="bi bi-check2-all me-1"></i>Selesai
-                                    </span>
+                                    <span class="badge badge-soft-secondary">Selesai</span>
                                 <?php endif; ?>
                             </td>
 
-                            <td class="small text-secondary pe-4">
-                                <?php if ($r['nama_petugas']): ?>
-                                    <span class="d-inline-flex align-items-center gap-1">
-                                        <i class="bi bi-person-circle text-muted"></i>
-                                        <?= html_escape($r['nama_petugas']) ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="text-muted">-</span>
-                                <?php endif; ?>
+                            <td class="small text-muted pe-4">
+                                <?= $r['nama_petugas'] ? html_escape($r['nama_petugas']) : '-' ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -207,11 +176,7 @@ function konfirmasiHapusRiwayat() {
         alert('Pilih minimal satu riwayat berstatus Selesai yang ingin dihapus.');
         return false;
     }
-    return confirm(
-        'Apakah Anda yakin ingin menghapus ' +
-        terpilih.length +
-        ' riwayat peminjaman yang dipilih? Data yang dihapus tidak dapat dikembalikan.'
-    );
+    return confirm('Hapus ' + terpilih.length + ' riwayat peminjaman yang dipilih?');
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -243,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cariInput.addEventListener('input', function () {
             var q = this.value.toLowerCase();
             document.querySelectorAll('#tabelRiwayat tbody tr').forEach(function (tr) {
-                if (tr.querySelector('.empty-state')) return;
+                if (tr.querySelector('.empty-state') || tr.cells.length < 3) return;
                 tr.style.display = tr.textContent.toLowerCase().indexOf(q) > -1 ? '' : 'none';
             });
         });

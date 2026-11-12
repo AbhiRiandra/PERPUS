@@ -1,81 +1,69 @@
 <?php $is_admin = $this->session->userdata('role') === 'admin'; ?>
 
-<div class="modern-card">
+<div class="clean-card">
 
     <!-- HEADER -->
-    <div class="card-header bg-transparent border-bottom px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div class="card-header bg-transparent border-bottom px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
-            <h5 class="fw-bold text-dark mb-1">
-                <i class="bi bi-collection-fill text-primary me-2"></i>Daftar Paket Buku
-            </h5>
-            <p class="text-muted small mb-0">
-                Setiap paket berisi ratusan judul buku yang didistribusikan sebagai satu kesatuan.
-            </p>
+            <h5 class="fw-bold text-dark mb-0">Daftar Paket Buku</h5>
+            <span class="text-muted small">Kelola paket koleksi buku untuk distribusi kelurahan</span>
         </div>
 
         <?php if ($is_admin): ?>
-            <a href="<?= base_url('backend/paket/tambah') ?>" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm">
+            <a href="<?= base_url('backend/paket/tambah') ?>" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1">
                 <i class="bi bi-plus-lg"></i>
-                <span>Tambah Paket Baru</span>
+                <span>Tambah Paket</span>
             </a>
         <?php endif; ?>
     </div>
 
-    <!-- FILTER & PENCARIAN BAR -->
-    <div class="px-4 py-3 border-bottom bg-light bg-opacity-50 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <!-- FILTER & PENCARIAN -->
+    <div class="px-4 py-2 border-bottom bg-light bg-opacity-50 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
         <div class="filter-pills">
             <?php
             $filter_status = [
-                ''          => ['Semua',     'bi-grid'],
-                'tersedia'  => ['Tersedia',  'bi-check2-circle'],
-                'dipinjam'  => ['Dipinjam',  'bi-box-arrow-up-right'],
-                'terlambat' => ['Terlambat', 'bi-exclamation-triangle'],
+                ''          => 'Semua',
+                'tersedia'  => 'Tersedia',
+                'dipinjam'  => 'Dipinjam',
+                'terlambat' => 'Terlambat',
             ];
-            foreach ($filter_status as $v => $meta):
+            foreach ($filter_status as $v => $label):
             ?>
                 <a href="<?= base_url('backend/paket' . ($v ? '?status=' . $v : '')) ?>"
                    class="filter-pill <?= $status === $v ? 'active' : '' ?>">
-                    <i class="bi <?= $meta[1] ?> me-1"></i><?= $meta[0] ?>
+                    <?= $label ?>
                 </a>
             <?php endforeach; ?>
         </div>
 
-        <div style="min-width: 260px;">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                <input type="search" id="cariPaketList" class="form-control bg-white border-start-0 ps-0" placeholder="Cari kode, nama, atau deskripsi paket...">
-            </div>
+        <div style="min-width: 240px;">
+            <input type="search" id="cariPaketList" class="form-control form-control-sm" placeholder="Cari kode atau nama paket...">
         </div>
     </div>
 
     <!-- TABEL PAKET -->
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-modern table-hover align-middle" id="tabelPaketList">
+            <table class="table table-clean table-hover align-middle" id="tabelPaketList">
                 <thead>
                     <tr>
-                        <th class="ps-4" style="width: 90px;">Kode</th>
-                        <th>Nama &amp; Deskripsi Paket</th>
-                        <th class="text-center" style="width: 140px;">Jumlah Koleksi</th>
-                        <th>Status &amp; Posisi Saat Ini</th>
-                        <th class="text-end pe-4" style="width: 180px;">Aksi</th>
+                        <th class="ps-4" style="width: 70px;">Kode</th>
+                        <th>Nama Paket</th>
+                        <th class="text-center" style="width: 130px;">Koleksi</th>
+                        <th>Posisi Saat Ini</th>
+                        <th class="text-end pe-4" style="width: 150px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($paket)): ?>
                         <tr>
                             <td colspan="5">
-                                <div class="empty-state">
+                                <div class="empty-state py-4">
                                     <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
-                                    <h6 class="fw-bold text-dark mb-1">Tidak Ada Paket Ditemukan</h6>
-                                    <p class="text-muted small mb-3">
-                                        <?= $status ? 'Tidak ada paket dengan filter status "' . html_escape(ucfirst($status)) . '".' : 'Belum ada paket buku yang terdaftar di sistem.' ?>
-                                    </p>
-                                    <?php if ($status): ?>
-                                        <a href="<?= base_url('backend/paket') ?>" class="btn btn-sm btn-outline-primary">Tampilkan Semua Paket</a>
-                                    <?php elseif ($is_admin): ?>
-                                        <a href="<?= base_url('backend/paket/tambah') ?>" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Buat Paket Pertama</a>
-                                    <?php endif; ?>
+                                    <div class="fw-semibold text-dark mb-1">Tidak ada paket ditemukan</div>
+                                    <div class="text-muted small">
+                                        <?= $status ? 'Tidak ada paket dengan filter status "' . html_escape(ucfirst($status)) . '".' : 'Belum ada paket buku yang terdaftar.' ?>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -89,35 +77,30 @@
 
                                 <!-- NAMA PAKET -->
                                 <td>
-                                    <a href="<?= base_url('backend/paket/detail/' . (int) $p['id']) ?>" class="fw-bold text-dark text-decoration-none d-block mb-1">
+                                    <a href="<?= base_url('backend/paket/detail/' . (int) $p['id']) ?>" class="fw-semibold text-dark text-decoration-none">
                                         <?= html_escape($p['nama']) ?>
                                     </a>
-                                    <div class="text-muted small">
-                                        <?= $p['deskripsi'] ? html_escape(character_limiter((string) $p['deskripsi'], 75)) : '<span class="fst-italic">Tidak ada deskripsi singkat</span>' ?>
-                                    </div>
+                                    <?php if ($p['deskripsi']): ?>
+                                        <div class="text-muted small"><?= html_escape(character_limiter((string) $p['deskripsi'], 65)) ?></div>
+                                    <?php endif; ?>
                                 </td>
 
                                 <!-- JUMLAH JUDUL -->
                                 <td class="text-center">
                                     <span class="badge badge-soft-secondary">
-                                        <i class="bi bi-book me-1"></i><?= (int) $p['jml_buku'] ?> judul
+                                        <?= (int) $p['jml_buku'] ?> judul
                                     </span>
                                 </td>
 
                                 <!-- STATUS DAN POSISI -->
                                 <td>
                                     <?php if ($p['status'] === 'dipinjam'): ?>
-                                        <div class="fw-bold text-dark mb-1">
-                                            <i class="bi bi-geo-alt-fill text-danger me-1"></i><?= html_escape($p['nama_lokasi']) ?>
-                                        </div>
-                                        <div class="d-flex align-items-center flex-wrap gap-2 small text-muted">
-                                            <span>Jatuh tempo: <strong><?= tgl_indo($p['tgl_jatuh_tempo']) ?></strong></span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="fw-semibold text-dark"><?= html_escape($p['nama_lokasi']) ?></span>
                                             <?= badge_jatuh_tempo($p['tgl_jatuh_tempo']) ?>
                                         </div>
                                     <?php else: ?>
-                                        <span class="badge badge-soft-success">
-                                            <i class="bi bi-building-check me-1"></i>Tersedia di Perpustakaan
-                                        </span>
+                                        <span class="badge badge-soft-success">Tersedia di Perpus</span>
                                     <?php endif; ?>
                                 </td>
 
@@ -126,21 +109,21 @@
                                     <div class="d-inline-flex align-items-center gap-1">
                                         <?php if ($p['status'] === 'tersedia'): ?>
                                             <a href="<?= base_url('backend/peminjaman/pinjam/' . (int) $p['id']) ?>"
-                                               class="btn btn-sm btn-outline-success"
-                                               title="Pinjamkan ke Lokasi">
-                                                <i class="bi bi-box-arrow-up-right"></i>
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Pinjamkan">
+                                                Pinjamkan
                                             </a>
                                         <?php else: ?>
                                             <a href="<?= base_url('backend/peminjaman/oper/' . (int) $p['id']) ?>"
-                                               class="btn btn-sm btn-outline-warning"
+                                               class="btn btn-sm btn-outline-secondary"
                                                title="Oper ke Lokasi Lain">
-                                                <i class="bi bi-arrow-left-right"></i>
+                                                Oper
                                             </a>
                                         <?php endif; ?>
 
                                         <a href="<?= base_url('backend/paket/detail/' . (int) $p['id']) ?>"
-                                           class="btn btn-sm btn-primary px-3">
-                                            Detail <i class="bi bi-chevron-right ms-1 small"></i>
+                                           class="btn btn-sm btn-light border" title="Detail">
+                                            <i class="bi bi-chevron-right"></i>
                                         </a>
                                     </div>
                                 </td>
